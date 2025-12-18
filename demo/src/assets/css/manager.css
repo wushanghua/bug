@@ -1,0 +1,148 @@
+.admin-container {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.header {
+  height: 60px;
+  background-color: #165dff;
+  color: white;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 20px;
+  box-shadow: 0 2px 8px rgba(22, 93, 255, 0.3);
+  z-index: 10;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.menu-toggle {
+  color: white;
+  background-color: rgba(255, 255, 255, 0.15);
+  border: none;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.logo-img {
+  width: 36px;
+  height: 36px;
+  border-radius: 4px;
+}
+
+.logo-title {
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  padding: 5px 10px;
+  border-radius: 4px;
+  transition: background-color 0.2s;
+  min-width: auto;
+  width: auto;
+  flex-shrink: 0;
+}
+
+.user-info:hover {
+  background-color: rgba(255, 255, 255, 0.15);
+}
+
+.avatar {
+  width: 40px;
+  height: 40px;
+}
+
+.username {
+  font-size: 14px;
+  font-weight: 500;
+  color: white;
+  margin-left: 6px;
+  white-space: nowrap;
+}
+
+.arrow {
+  font-size: 14px;
+  margin-left: 4px;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.main-content {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+}
+
+.sidebar {
+  background-color: #1e293b;
+  overflow: hidden;
+  box-shadow: 2px 0 8px rgba(0, 0, 0, 0.15);
+}
+
+.el-menu {
+  border-right: none;
+  height: 100%;
+  padding-top: 10px;
+  background-color: #1e293b !important;
+}
+
+.el-menu-item {
+  color: #cbd5e1 !important;
+  transition: all 0.3s ease;
+}
+
+.el-menu-item:hover {
+  background-color: rgba(22, 93, 255, 0.2) !important;
+  color: #165dff !important;
+}
+
+.el-menu-item.is-active {
+  background-color: rgba(22, 93, 255, 0.3) !important;
+  color: #165dff !important;
+}
+
+.el-menu-item.is-active:hover {
+  background-color: rgba(22, 93, 255, 0.4) !important;
+}
+
+.main {
+  flex: 1;
+  padding: 20px;
+  overflow-y: auto;
+  background-color: #f8fafc;
+}
+
+/* 响应式适配 */
+@media (max-width: 768px) {
+  .logo-title {
+    display: none;
+  }
+
+  .sidebar {
+    width: 64px !important;
+  }
+
+  .isCollapse {
+    width: 64px;
+  }
+}

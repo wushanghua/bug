@@ -1,0 +1,23 @@
+server:
+  port: 8080  # 设置应用启动端口为5173
+
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/big_event
+    username: root
+    password: 123456
+  servlet:
+    multipart:
+          max-file-size: 100MB  # 单个文件最大大小
+          max-request-size: 100MB  # 单次请求最大大小（包含所有文件和表单数据）
+
+
+mybatis:
+  configuration:
+    map-underscore-to-camel-case: true
+ #文件上传配置
+file:
+  upload:
+    base-path: E:\IdeaProjects\files # 文件实际存储的本地路径
+    access-path: /files/**  # 前端访问文件的URL路径前缀

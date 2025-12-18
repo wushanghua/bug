@@ -1,0 +1,15 @@
+# IDEA配置文件
+**/.idea/
+**/*.iml
+
+# 编译产物
+target/
+demo/node_modules/
+demo/package-lock.json
+
+# 临时文件
+*.log
+
+# 资源文件夹（不纳入Git管理）
+files/ 
+ 

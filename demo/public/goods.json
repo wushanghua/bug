@@ -1,0 +1,16 @@
+{"get":[
+  {
+    "sku": 10001,
+    "title": "iPhone 15 Pro 256G 钛金属",
+    "price": 8999,
+    "stock": 120,
+    "cover": "https://dummyimage.com/300x300/eee/000&text=iPhone15"
+  },
+  {
+    "sku": 10002,
+    "title": "MacBook Air M3 13\" 16G+512G",
+    "price": 11999,
+    "stock": 56,
+    "cover": "https://dummyimage.com/300x300/eee/000&text=MacBook"
+  }
+]}
