@@ -50,11 +50,6 @@ const router = createRouter({
       component: () => import("@/views/login.vue"),
     },
     {
-      path: "/1",
-      meta: { title: "表", requireAuth: false },
-      component: () => import("@/components/management/1.vue"),
-    },
-    {
       path: "/register",
       meta: { title: "注册", requireAuth: false },
       component: () => import("@/views/Register.vue"),

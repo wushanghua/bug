@@ -14,11 +14,11 @@ public interface CategoryMapper {
             "create_time, " +
             "update_time" +
             ") values (" +
-            "#{categoryName}, " +  // 对应Category的categoryName字段
-            "#{categoryAlias}, " + // 对应Category的categoryAlias字段
-            "#{createUser}, " +    // 对应Category的createUser字段
-            "#{createTime}, " +    // 对应Category的createTime字段
-            "#{updateTime}" +      // 对应Category的updateTime字段
+            "#{categoryName}, " +
+            "#{categoryAlias}, " +
+            "#{createUser}, " +
+            "#{createTime}, " +
+            "#{updateTime}" +
             ")")
 
     void add(Category category);

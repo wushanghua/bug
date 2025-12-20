@@ -1,27 +1,19 @@
 package com.wunai.springbook1.pojo;
 
-
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.wunai.springbook1.constant.RoleConstant;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.Pattern;
-import jdk.jfr.DataAmount;
-import jdk.jfr.MetadataDefinition;
+
 import lombok.Data;
-import lombok.NonNull;
+
 
 import java.time.LocalDateTime;
-//lombok 编译阶段自动生成setter getter tostring
-// pom 文件中引入依赖 在实体上添加注释
+
 @Data
 public class User {
 //    @NonNull
     private Integer id;//主键ID
     private String username;//用户名
-//    @JsonIgnore //用来password，最后json字符串返回时不显示password
+//    @JsonIgnore //最后json字符串返回时不显示password
 @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;//密码
 
