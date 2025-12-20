@@ -37,6 +37,13 @@
           </el-tag>
         </template>
       </el-table-column>
+      <el-table-column prop="priority" label="优先级" width="100">
+        <template #default="scope">
+          <el-tag :type="getPriorityType(scope.row.priority)">
+            {{ getPriorityName(scope.row.priority) }}
+          </el-tag>
+        </template>
+      </el-table-column>
       <el-table-column prop="submitterName" label="提交人" width="120">
         <template #default="scope">
           {{ scope.row.submitterName || '-' }}
@@ -292,6 +299,7 @@ const load = () => {
           let bugs = res.data.map(bug => ({
             ...bug,
             severity: Number(bug.severity),
+            priority: Number(bug.priority || 1), // 默认优先级为低
             status: bug.status ?? 0,
             create_time: bug.create_time || bug.createTime,
             submitterName: bug.submitterName || bug.submitter_name || '-',
@@ -307,6 +315,8 @@ const load = () => {
           if (severityFilter.value !== null) {
             bugs = bugs.filter(bug => bug.severity === severityFilter.value);
           }
+          // 按优先级排序（优先级高的在前面：3 > 2 > 1）
+          bugs.sort((a, b) => b.priority - a.priority);
           // 分页处理
           const start = (data.pageNum - 1) * data.pageSize;
           const end = start + data.pageSize;
@@ -426,6 +436,34 @@ const getSeverityName = (severity) => {
       return '致命';
     default:
       return '未知';
+  }
+};
+
+// 获取优先级对应的标签类型
+const getPriorityType = (priority) => {
+  switch(priority) {
+    case 1:
+      return 'info';
+    case 2:
+      return 'warning';
+    case 3:
+      return 'danger';
+    default:
+      return 'info';
+  }
+};
+
+// 获取优先级名称
+const getPriorityName = (priority) => {
+  switch(priority) {
+    case 1:
+      return '低';
+    case 2:
+      return '中';
+    case 3:
+      return '高';
+    default:
+      return '低';
   }
 };
 

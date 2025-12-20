@@ -4,6 +4,7 @@ import com.wunai.springbook1.interceptors.PermissionInterceptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
@@ -20,6 +21,16 @@ public class WebConfig implements WebMvcConfigurer {
     private String accessPath;
     @Autowired
     private PermissionInterceptor permissionInterceptor;
+
+    @Override
+    public void addCorsMappings(CorsRegistry registry) {
+        registry.addMapping("/**") // 对所有接口生效
+                .allowedOrigins("http://localhost:5173") // 允许前端源
+                .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH") // 允许请求方法
+                .allowedHeaders("*") // 允许所有请求头
+                .allowCredentials(true) // 允许携带cookie
+                .maxAge(3600); // 预检请求缓存时间
+    }
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {

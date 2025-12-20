@@ -140,10 +140,18 @@
         </el-form-item>
         <!-- 角色 -->
         <el-form-item label="角色" prop="role">
-        <el-select v-model="formData.role" placeholder="请选择角色">
-          <el-option label="管理员" value="ADMIN" />
+        <el-select 
+          v-model="formData.role" 
+          placeholder="请选择角色"
+          :disabled="isEditingSelf"
+        >
+          <!-- 只有超级管理员可以创建管理员 -->
+          <el-option v-if="isSuperAdmin" label="管理员" value="ADMIN" />
           <el-option label="普通用户" value="USER" />
         </el-select>
+        <div v-if="isEditingSelf" class="role-tip">
+          <el-text type="warning" size="small">不能修改自己的角色</el-text>
+        </div>
         </el-form-item>
         <!-- 头像 -->
         <el-form-item label="头像">
@@ -202,6 +210,8 @@ const searchForm = reactive({
 // 角色筛选
 const roleFilter = ref('');
 const isSuperAdmin = ref(false);
+const currentUserId = ref(null); // 当前登录用户ID
+const isEditingSelf = ref(false); // 是否正在编辑自己
 
 // 设置角色筛选
 const setRoleFilter = (role) => {
@@ -229,15 +239,16 @@ const formData = reactive({
 const formRules = {
   username: [
     { required: true, message: '请输入用户名', trigger: 'blur' },
-    { min: 3, max: 20, message: '用户名长度在 3 到 20 个字符', trigger: 'blur' }
+    { min: 5, max: 16, message: '用户名长度在5-16个字符', trigger: 'blur' },
+    { pattern: /^[a-zA-Z0-9]{5,16}$/, message: '用户名只能包含英文字母和数字', trigger: 'blur' }
   ],
   password: [
     { required: true, message: '请输入密码', trigger: 'blur' },
-    { min: 6, max: 20, message: '密码长度在 6 到 20 个字符', trigger: 'blur' }
+    { min: 5, max: 16, message: '密码长度在5-16个字符', trigger: 'blur' }
   ],
   nickname: [
     { required: true, message: '请输入昵称', trigger: 'blur' },
-    { min: 2, max: 20, message: '昵称长度在 2 到 20 个字符', trigger: 'blur' }
+    { min: 2, max: 20, message: '昵称长度在2-20个字符', trigger: 'blur' }
   ],
   email: [
     { required: true, message: '请输入邮箱', trigger: 'blur' },
@@ -266,6 +277,7 @@ onMounted(() => {
     try {
       const claims = jwtDecode(tokenRaw)?.claims || {};
       isSuperAdmin.value = claims.role === 'SUPER_ADMIN';
+      currentUserId.value = claims.id; // 保存当前用户ID
       console.log(claims)
     } catch (e) {
       isSuperAdmin.value = false;
@@ -339,6 +351,10 @@ const openEditDialog = (row) => {
   // 深拷贝原数据，避免污染
   Object.assign(formData, JSON.parse(JSON.stringify(row)));
   formData.user_pic = row.user_pic || row.userPic || '';
+  
+  // 判断是否正在编辑自己
+  isEditingSelf.value = (row.id === currentUserId.value);
+  
   // 清空现有文件列表
   fileList.value = [];
   // 回显头像
@@ -359,6 +375,7 @@ const openEditDialog = (row) => {
 // 关闭弹窗时的处理
 const handleDialogClose = () => {
   resetForm();
+  isEditingSelf.value = false; // 重置编辑自己的标志
   dialogVisible.value = false;
 };
 
@@ -368,12 +385,19 @@ const handleSubmit = () => {
     if (valid) {
       // 构建表单数据
       const formDataToSubmit = new FormData();
-      formDataToSubmit.append('id', formData.id);
+      
+      if (dialogType.value === 'edit') {
+        // 编辑模式：传递用户ID
+        formDataToSubmit.append('id', formData.id);
+      }
+      
       formDataToSubmit.append('username', formData.username);
+      
       // 处理密码（仅新增时需要）
       if (dialogType.value === 'add') {
         formDataToSubmit.append('password', formData.password);
       }
+      
       formDataToSubmit.append('nickname', formData.nickname);
       formDataToSubmit.append('email', formData.email);
       formDataToSubmit.append('role', formData.role);
@@ -382,13 +406,10 @@ const handleSubmit = () => {
       if (fileList.value.length > 0 && fileList.value[0].raw) {
         // 有新选择的文件
         formDataToSubmit.append('user_pic', fileList.value[0].raw);
-      } else if (dialogType.value === 'edit' && !formData.user_pic) {
-        // 编辑模式下清空头像
-        formDataToSubmit.append('user_pic', '');
       }
 
       // 发送请求
-      const url = dialogType.value === 'add' ? '/user/admin/add' : '/user/update';
+      const url = dialogType.value === 'add' ? '/user/admin/add' : '/user/admin/update';
       axios.post(url, formDataToSubmit, {
         headers: {
           'Content-Type': 'multipart/form-data',
@@ -546,5 +567,9 @@ const handleFileRemove = () => {
 .no-avatar {
   font-size: 40px;
   color: #909399;
+}
+.role-tip {
+  margin-top: 4px;
+  font-size: 12px;
 }
 </style>

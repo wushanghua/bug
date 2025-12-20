@@ -175,17 +175,92 @@ public class BugController {
     }
 
     /**
-     * 编辑
+     * 编辑（支持多文件上传，保留原有附件）
      */
-    @PutMapping("/edit")
-    public Result updateBug(@RequestBody Bug bug) {
-        System.out.println(bug);
-        if (bug.getId() == null) {
-            return Result.fail("编辑失败：bug ID不能为空");
+    @PutMapping(value = "/edit", consumes = "multipart/form-data")
+    public Result updateBug(
+            @ModelAttribute Bug bug,
+            @RequestParam(value = "file", required = false) MultipartFile[] files,
+            @RequestParam(value = "oldDocument", required = false) String oldDocument) {
+        try {
+            System.out.println(bug);
+            if (bug.getId() == null) {
+                return Result.fail("编辑失败：bug ID不能为空");
+            }
+
+            // 处理文件上传：合并原有附件和新上传的文件
+            List<String> allFileUrls = new ArrayList<>();
+            
+            // 1. 保留原有附件（如果有）
+            if (oldDocument != null && !oldDocument.trim().isEmpty()) {
+                String[] oldUrls = oldDocument.split(",");
+                for (String url : oldUrls) {
+                    if (url != null && !url.trim().isEmpty()) {
+                        allFileUrls.add(url.trim());
+                    }
+                }
+            }
+            
+            // 2. 处理新上传的文件
+            if (files != null && files.length > 0) {
+                // 构建document文件夹路径：basePath/document_files
+                File documentDir = new File(basePath, DOCUMENT_SUB_DIR);
+                // 确保文件夹存在（不存在则创建）
+                if (!documentDir.exists()) {
+                    documentDir.mkdirs(); // 递归创建目录
+                }
+
+                for (MultipartFile file : files) {
+                    if (file.isEmpty()) {
+                        continue; // 跳过空文件
+                    }
+
+                    // 1. 校验文件类型
+                    String contentType = file.getContentType();
+                    boolean isAllowed = false;
+                    for (String type : ALLOWED_TYPES) {
+                        if (type.equals(contentType)) {
+                            isAllowed = true;
+                            break;
+                        }
+                    }
+                    if (!isAllowed) {
+                        throw new RuntimeException("不支持的文件类型！仅支持图片(jpg/jpeg/png/gif/bmp/webp)和视频(mp4/avi/mpeg/quicktime/webm/ogg)");
+                    }
+
+                    // 2. 生成唯一文件名（时间戳+原文件名，防止重名）
+                    String originalFilename = file.getOriginalFilename();
+                    String fileName = System.currentTimeMillis() + "_" + originalFilename;
+
+                    // 3. 构建完整存储路径：basePath/document_files/文件名
+                    File storageFile = new File(documentDir, fileName);
+
+                    // 4. 保存文件到document文件夹
+                    file.transferTo(storageFile);
+
+                    // 5. 生成文件访问URL（包含document_files子路径，与FileController下载接口匹配）
+                    // 对文件名进行URL编码，支持中文和特殊符号
+                    String encodedFileName = URLEncoder.encode(fileName, StandardCharsets.UTF_8);
+                    String fileUrl = "http://localhost:8080/files/download/" + DOCUMENT_SUB_DIR + "/" + encodedFileName;
+                    allFileUrls.add(fileUrl);
+                }
+            }
+
+            // 3. 合并所有文件URL（原有的 + 新上传的）
+            if (!allFileUrls.isEmpty()) {
+                bug.setDocument(String.join(",", allFileUrls));
+            } else {
+                // 如果没有任何附件，设置为空字符串
+                bug.setDocument("");
+            }
+
+            int rows = bugService.updateBug(bug);
+            return  Result.ok("编辑成功") ;
+        } catch (Exception e) {
+            return Result.error("编辑失败：" + e.getMessage());
         }
-        int rows = bugService.updateBug(bug);
-        return rows > 0 ? Result.ok("编辑成功") : Result.fail("编辑失败");
     }
+
 
     /**
      * 单个删除

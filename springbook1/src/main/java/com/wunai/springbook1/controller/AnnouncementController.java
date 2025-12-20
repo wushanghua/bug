@@ -41,10 +41,6 @@ public class AnnouncementController {
         if (claims == null) {
             return Result.error("未登录");
         }
-        String role = (String) claims.get("role");
-        if (!RoleConstant.ADMIN.equals(role) && !RoleConstant.SUPER_ADMIN.equals(role)) {
-            return Result.error("没有权限访问");
-        }
 
         PageHelper.startPage(pageNum, pageSize);
         List<Announcement> list = announcementService.findAll(title);

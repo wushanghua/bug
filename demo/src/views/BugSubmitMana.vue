@@ -8,13 +8,13 @@
       </div>
       <!-- 横向导航菜单 -->
       <el-menu
-        mode="horizontal"
-        :default-active="router.currentRoute.value.path"
-        router
-        background-color="rgb(17, 17,17)"
-        text-color="#fff"
-        :ellipsis="false"
-        active-text-color="#ffd04b"
+          mode="horizontal"
+          :default-active="router.currentRoute.value.path"
+          router
+          background-color="rgb(17, 17,17)"
+          text-color="#fff"
+          :ellipsis="false"
+          active-text-color="#ffd04b"
       >
         <el-menu-item index="/bugmana/userhome"> <el-icon><House /></el-icon>首页</el-menu-item>
         <el-menu-item index="/bugmana/submit_bug"><el-icon><CirclePlus /></el-icon>提交Bug</el-menu-item>
@@ -22,18 +22,18 @@
 
         <!-- 已登录：显示下拉菜单 -->
         <el-sub-menu index="loginMenu" >
-            <template #title>  
-              <img 
-                v-if="data.userPic" 
-                :src="data.userPic"  
+          <template #title>
+            <img
+                v-if="data.userPic"
+                :src="data.userPic"
                 style="height: 50px; width: 50px; border-radius: 50%; object-fit: cover;"
                 @error="handleAvatarError"
                 alt="用户头像"
-              />
-              <el-avatar v-else icon="User" class="avatar" />{{data.username}}
-            </template>
+            />
+            <el-avatar v-else icon="User" class="avatar" />{{data.username}}
+          </template>
 
-           
+
           <el-menu-item index="/bugmana/userinfo">个人中心</el-menu-item>
 
           <el-menu-item @click="exit" index="">退出登录</el-menu-item>
@@ -54,6 +54,7 @@ import { ElMessage } from "element-plus";
 import router from "@/router/index.js";
 import { jwtDecode } from 'jwt-decode';
 import axios from "@/utils/axios.js";
+import {Bell} from "@element-plus/icons-vue";
 
 const data = reactive({
   token:localStorage.getItem('xm-pro-user'),
@@ -73,7 +74,7 @@ const fetchUserInfo = () => {
       data.username = res.data.username
       console.log('更新用户信息：', { userPic: data.userPic, username: data.username });
     }else {
-      console.error(res.message || res.msg)
+      console.error(res.message)
     }
   }).catch(err => {
     console.error('获取用户信息失败：', err);
@@ -83,7 +84,7 @@ const fetchUserInfo = () => {
 onMounted(()=>{
   // 初始化获取用户信息
   fetchUserInfo();
-  
+
   // 监听用户信息更新事件（当子组件更新用户信息时触发）
   window.addEventListener('userInfoUpdated', fetchUserInfo);
 })
@@ -150,7 +151,7 @@ const exit = () => {
   max-width: 80%;
   margin-left: 15%;
   margin-right: 15%;
-  background-color: rgb(216, 215, 215);
+
 }
 
 横向菜单样式调整 :deep(.el-menu--horizontal) {
